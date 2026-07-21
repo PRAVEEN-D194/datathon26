@@ -1,0 +1,102 @@
+[
+  {
+    "district": "Bengaluru City",
+    "station_count": 8,
+    "stations": [
+      "Koramangala PS",
+      "Indiranagar PS",
+      "Whitefield PS",
+      "Cubbon Park PS",
+      "Jayanagar PS",
+      "Electronic City PS",
+      "Hebbal PS",
+      "Rajajinagar PS"
+    ],
+    "latitude": 12.9716,
+    "longitude": 77.5946
+  },
+  {
+    "district": "Mysuru",
+    "station_count": 5,
+    "stations": [
+      "Devaraja PS",
+      "Nazarbad PS",
+      "Vidyaranyapuram PS",
+      "Kuuvempunagar PS",
+      "Lashkar PS"
+    ],
+    "latitude": 12.2958,
+    "longitude": 76.6394
+  },
+  {
+    "district": "Hubballi-Dharwad",
+    "station_count": 4,
+    "stations": [
+      "Suburban PS Hubballi",
+      "Bendigeri PS",
+      "Dharwad Town PS",
+      "Vidyanagar PS"
+    ],
+    "latitude": 15.3647,
+    "longitude": 75.124
+  },
+  {
+    "district": "Mangaluru",
+    "station_count": 5,
+    "stations": [
+      "Barkhe PS",
+      "Pandeshwar PS",
+      "Kadri PS",
+      "Urwa PS",
+      "Ullal PS"
+    ],
+    "latitude": 12.9141,
+    "longitude": 74.856
+  },
+  {
+    "district": "Belagavi",
+    "station_count": 4,
+    "stations": [
+      "Khade Bazar PS",
+      "Camp PS",
+      "Tilakwadi PS",
+      "APMC PS"
+    ],
+    "latitude": 15.8497,
+    "longitude": 74.4977
+  },
+  {
+    "district": "Kalaburagi",
+    "station_count": 4,
+    "stations": [
+      "Brahampur PS",
+      "M B Nagar PS",
+      "Chowk PS",
+      "Station Bazar PS"
+    ],
+    "latitude": 17.3297,
+    "longitude": 76.8343
+  },
+  {
+    "district": "Ballari",
+    "station_count": 3,
+    "stations": [
+      "Brucepet PS",
+      "Gandhinagar PS",
+      "Cowled Bazar PS"
+    ],
+    "latitude": 15.1394,
+    "longitude": 76.9214
+  },
+  {
+    "district": "Tumakuru",
+    "station_count": 3,
+    "stations": [
+      "Town PS Tumakuru",
+      "New Extension PS",
+      "Kyathsandra PS"
+    ],
+    "latitude": 13.3409,
+    "longitude": 77.1006
+  }
+]

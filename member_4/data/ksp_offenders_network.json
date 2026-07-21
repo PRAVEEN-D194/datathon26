@@ -1,0 +1,233 @@
+{
+  "nodes": [
+    {
+      "id": "SUS-1001",
+      "label": "Ramesh 'Blade' Kumar",
+      "alias": "Blade Ramesh",
+      "type": "suspect",
+      "group": "MG Road Gang",
+      "prior_cases": 7,
+      "risk_level": "HIGH"
+    },
+    {
+      "id": "SUS-1002",
+      "label": "Syed 'Crypto' Imran",
+      "alias": "Hacker Imran",
+      "type": "suspect",
+      "group": "DarkNet Syndicate",
+      "prior_cases": 4,
+      "risk_level": "MEDIUM"
+    },
+    {
+      "id": "SUS-1003",
+      "label": "Manjunath V",
+      "alias": "Bullet Manja",
+      "type": "suspect",
+      "group": "Koramangala Network",
+      "prior_cases": 9,
+      "risk_level": "HIGH"
+    },
+    {
+      "id": "SUS-1004",
+      "label": "Kiran @ Shadow",
+      "alias": "Shadow Kiran",
+      "type": "suspect",
+      "group": "MG Road Gang",
+      "prior_cases": 5,
+      "risk_level": "MEDIUM"
+    },
+    {
+      "id": "SUS-1005",
+      "label": "Vikram Singh",
+      "alias": "Vicky Fraud",
+      "type": "suspect",
+      "group": "North India Cyber Syndicate",
+      "prior_cases": 6,
+      "risk_level": "MEDIUM"
+    },
+    {
+      "id": "SUS-1006",
+      "label": "Anil 'Snake' Shetty",
+      "alias": "Snake Anil",
+      "type": "suspect",
+      "group": "Coastal Smugglers",
+      "prior_cases": 8,
+      "risk_level": "HIGH"
+    },
+    {
+      "id": "SUS-1007",
+      "label": "Praveen Gowda",
+      "alias": "Appu",
+      "type": "suspect",
+      "group": "Koramangala Network",
+      "prior_cases": 3,
+      "risk_level": "MEDIUM"
+    },
+    {
+      "id": "SUS-1008",
+      "label": "Deepak Sharma",
+      "alias": "Doctor",
+      "type": "suspect",
+      "group": "DarkNet Syndicate",
+      "prior_cases": 5,
+      "risk_level": "MEDIUM"
+    },
+    {
+      "id": "SUS-1009",
+      "label": "Farooq Ahmed",
+      "alias": "Bhaijan",
+      "type": "suspect",
+      "group": "Coastal Smugglers",
+      "prior_cases": 11,
+      "risk_level": "HIGH"
+    },
+    {
+      "id": "SUS-1010",
+      "label": "Suresh 'Fast' Reddy",
+      "alias": "Fast Reddy",
+      "type": "suspect",
+      "group": "MG Road Gang",
+      "prior_cases": 6,
+      "risk_level": "MEDIUM"
+    },
+    {
+      "id": "GANG-DARKNET_SYNDICATE",
+      "label": "DarkNet Syndicate",
+      "type": "gang",
+      "group": "DarkNet Syndicate",
+      "risk_level": "CRITICAL"
+    },
+    {
+      "id": "GANG-MG_ROAD_GANG",
+      "label": "MG Road Gang",
+      "type": "gang",
+      "group": "MG Road Gang",
+      "risk_level": "CRITICAL"
+    },
+    {
+      "id": "GANG-COASTAL_SMUGGLERS",
+      "label": "Coastal Smugglers",
+      "type": "gang",
+      "group": "Coastal Smugglers",
+      "risk_level": "CRITICAL"
+    },
+    {
+      "id": "GANG-NORTH_INDIA_CYBER_SYNDICATE",
+      "label": "North India Cyber Syndicate",
+      "type": "gang",
+      "group": "North India Cyber Syndicate",
+      "risk_level": "CRITICAL"
+    },
+    {
+      "id": "GANG-KORAMANGALA_NETWORK",
+      "label": "Koramangala Network",
+      "type": "gang",
+      "group": "Koramangala Network",
+      "risk_level": "CRITICAL"
+    }
+  ],
+  "links": [
+    {
+      "source": "SUS-1001",
+      "target": "GANG-MG_ROAD_GANG",
+      "relation": "MEMBER_OF",
+      "weight": 5
+    },
+    {
+      "source": "SUS-1002",
+      "target": "GANG-DARKNET_SYNDICATE",
+      "relation": "MEMBER_OF",
+      "weight": 5
+    },
+    {
+      "source": "SUS-1003",
+      "target": "GANG-KORAMANGALA_NETWORK",
+      "relation": "MEMBER_OF",
+      "weight": 5
+    },
+    {
+      "source": "SUS-1004",
+      "target": "GANG-MG_ROAD_GANG",
+      "relation": "MEMBER_OF",
+      "weight": 5
+    },
+    {
+      "source": "SUS-1005",
+      "target": "GANG-NORTH_INDIA_CYBER_SYNDICATE",
+      "relation": "MEMBER_OF",
+      "weight": 5
+    },
+    {
+      "source": "SUS-1006",
+      "target": "GANG-COASTAL_SMUGGLERS",
+      "relation": "MEMBER_OF",
+      "weight": 5
+    },
+    {
+      "source": "SUS-1007",
+      "target": "GANG-KORAMANGALA_NETWORK",
+      "relation": "MEMBER_OF",
+      "weight": 5
+    },
+    {
+      "source": "SUS-1008",
+      "target": "GANG-DARKNET_SYNDICATE",
+      "relation": "MEMBER_OF",
+      "weight": 5
+    },
+    {
+      "source": "SUS-1009",
+      "target": "GANG-COASTAL_SMUGGLERS",
+      "relation": "MEMBER_OF",
+      "weight": 5
+    },
+    {
+      "source": "SUS-1010",
+      "target": "GANG-MG_ROAD_GANG",
+      "relation": "MEMBER_OF",
+      "weight": 5
+    },
+    {
+      "source": "SUS-1001",
+      "target": "SUS-1004",
+      "relation": "CO_ACCUSED_BURGLARY",
+      "weight": 4
+    },
+    {
+      "source": "SUS-1001",
+      "target": "SUS-1010",
+      "relation": "ARMED_ROBBERY_PARTNER",
+      "weight": 5
+    },
+    {
+      "source": "SUS-1002",
+      "target": "SUS-1005",
+      "relation": "CYBER_FINANCIAL_FRAUD",
+      "weight": 4
+    },
+    {
+      "source": "SUS-1002",
+      "target": "SUS-1008",
+      "relation": "DARKWEB_CRYPTO_NODE",
+      "weight": 3
+    },
+    {
+      "source": "SUS-1003",
+      "target": "SUS-1007",
+      "relation": "VEHICLE_THEFT_RING",
+      "weight": 5
+    },
+    {
+      "source": "SUS-1006",
+      "target": "SUS-1009",
+      "relation": "NARCOTICS_DISTRIBUTION",
+      "weight": 6
+    },
+    {
+      "source": "SUS-1004",
+      "target": "SUS-1010",
+      "relation": "CHAIN_SNATCHING_MO",
+      "weight": 3
+    }
+  ]
+}
