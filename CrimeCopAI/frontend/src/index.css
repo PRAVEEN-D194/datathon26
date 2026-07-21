@@ -1,0 +1,132 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg-main: #081229;
+    --bg-card: #10203D;
+    --primary: #2563EB;
+    --success: #22C55E;
+    --warning: #F59E0B;
+    --danger: #EF4444;
+    --text: #F8FAFC;
+  }
+
+  body {
+    background-color: #081229;
+    color: #F8FAFC;
+    font-family: 'Inter', sans-serif;
+  }
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #081229;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1E3A8A;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #2563EB;
+}
+
+/* Glassmorphism utility classes */
+.glass-panel {
+  background: rgba(16, 32, 61, 0.75);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+}
+
+.glass-card {
+  background: linear-gradient(135deg, rgba(16, 32, 61, 0.8) 0%, rgba(11, 23, 51, 0.85) 100%);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(59, 130, 246, 0.18);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.glass-card-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card-hover:hover {
+  border-color: rgba(37, 99, 235, 0.5);
+  box-shadow: 0 8px 25px rgba(37, 99, 235, 0.25);
+  transform: translateY(-2px);
+}
+
+.glass-input {
+  background: rgba(8, 18, 41, 0.7);
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  color: #F8FAFC;
+  transition: all 0.2s ease;
+}
+
+.glass-input:focus {
+  outline: none;
+  border-color: #2563EB;
+  box-shadow: 0 0 12px rgba(37, 99, 235, 0.3);
+}
+
+/* Neon Glow Effects */
+.glow-text-blue {
+  text-shadow: 0 0 10px rgba(37, 99, 235, 0.5);
+}
+
+.glow-text-cyan {
+  text-shadow: 0 0 10px rgba(6, 182, 212, 0.5);
+}
+
+.border-glow-blue {
+  box-shadow: 0 0 15px rgba(37, 99, 235, 0.3);
+}
+
+/* Leaflet Dark Map Tile Customization */
+.leaflet-container {
+  background: #081229 !important;
+  font-family: 'Inter', sans-serif !important;
+  width: 100%;
+  height: 100%;
+}
+
+.leaflet-tile-pane {
+  filter: brightness(0.7) invert(1) contrast(3) hue-rotate(200deg) saturate(0.3);
+}
+
+.leaflet-popup-content-wrapper {
+  background: #10203D !important;
+  color: #F8FAFC !important;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 12px !important;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6) !important;
+}
+
+.leaflet-popup-tip {
+  background: #10203D !important;
+}
+
+/* Shimmer Loading Animation */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(90deg, #10203D 25%, #1E3A8A 50%, #10203D 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.8s infinite;
+}
