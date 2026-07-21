@@ -6,7 +6,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - MONGO_URL=mongodb://mongo_db:27017/crimelens
+      - MONGO_URL=mongodb://mongo_db:27017/crimecop
       - REDIS_URL=redis://redis_cache:6379/0
       - JWT_SECRET=cybernexus_super_secure_key_123!
     depends_on:

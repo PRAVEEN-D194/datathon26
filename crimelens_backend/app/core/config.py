@@ -2,8 +2,8 @@ from pydantic_settings import BaseSettings
 from typing import Optional
 
 class Settings(BaseSettings):
-    PROJECT_NAME: str = "CrimeLens AI"
-    MONGO_URL: str = "mongodb://localhost:27017/crimelens"
+    PROJECT_NAME: str = "CrimeCop AI"
+    MONGO_URL: str = "mongodb://localhost:27017/crimecop"
     REDIS_URL: Optional[str] = None
     JWT_SECRET: str = "cybernexus_super_secure_key_123!"
     JWT_ALGORITHM: str = "HS256"

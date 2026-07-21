@@ -7,7 +7,7 @@ def build_pdf_report_html() -> str:
     return f"""
     <html>
     <head>
-        <title>CrimeLens AI Executive Report</title>
+        <title>CrimeCop AI Executive Report</title>
         <style>
             body {{ font-family: 'Helvetica', Arial, sans-serif; margin: 40px; color: #333; }}
             .header {{ text-align: center; border-bottom: 2px solid #22d3ee; padding-bottom: 10px; }}
@@ -18,7 +18,7 @@ def build_pdf_report_html() -> str:
     </head>
     <body>
         <div class="header">
-            <h1>CRIMELENS DECISION INTELLIGENCE REPORT</h1>
+            <h1>CRIMECOP DECISION INTELLIGENCE REPORT</h1>
             <p>Generated on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} | KSP Database</p>
         </div>
         <div class="summary">

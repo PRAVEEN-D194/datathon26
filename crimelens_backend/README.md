@@ -1,6 +1,6 @@
-# CrimeLens AI | Production-Grade Decision Intelligence Backend
+# CrimeCop AI | Production-Grade Decision Intelligence Backend
 
-Welcome to the backend engine of **CrimeLens AI**, built for the Karnataka Police Datathon by **Team CyberNexus**. 
+Welcome to the backend engine of **CrimeCop AI**, built for the Karnataka Police Datathon by **Team CyberNexus**. 
 
 This backend adheres to **Clean Architecture** principles, separating API, Core Services, Repositories, and the Multi-Agent AI system.
 

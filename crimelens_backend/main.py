@@ -6,7 +6,7 @@ from app.core.websockets import websocket_hub
 from app.db.connection import db_connection
 
 app = FastAPI(
-    title="CrimeLens AI | Clean Backend",
+    title="CrimeCop AI | Clean Backend",
     description="Production-Grade Enterprise Decision Support Backend",
     version="3.0.0",
     docs_url="/docs",

@@ -23,7 +23,7 @@ class DatabaseConnection:
         except Exception:
             # Fallback to mongomock
             self.client = mongomock.MongoClient()
-            self.db = self.client.crimelens
+            self.db = self.client.crimecop
             self.is_mock = True
 
 db_connection = DatabaseConnection()
