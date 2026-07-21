@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CyberNexus | KSP Decision Intelligence Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        orbitron: ['Orbitron', 'sans-serif'],
+                        outfit: ['Outfit', 'sans-serif'],
+                    },
+                    colors: {
+                        cyan: {
+                            400: '#22d3ee',
+                            500: '#06b6d4',
+                            600: '#0891b2',
+                        },
+                        darkBg: '#050811',
+                        panelBg: 'rgba(10, 15, 30, 0.75)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #050811;
+            background-image: 
+                radial-gradient(at 10% 20%, rgba(6, 182, 212, 0.12) 0px, transparent 50%),
+                radial-gradient(at 90% 80%, rgba(99, 102, 241, 0.12) 0px, transparent 50%);
+            background-attachment: fixed;
+        }
+        .glow-border {
+            box-shadow: 0 0 15px rgba(34, 211, 238, 0.12);
+            border: 1px solid rgba(34, 211, 238, 0.2);
+        }
+        .glow-btn:hover {
+            box-shadow: 0 0 20px rgba(34, 211, 238, 0.4);
+        }
+        .glass {
+            background: rgba(8, 12, 24, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
+        ::-webkit-scrollbar-thumb { background: rgba(34, 211, 238, 0.3); border-radius: 4px; }
+    </style>
+</head>
+<body class="text-gray-100 min-h-screen flex flex-col">
+
+    <!-- Toast Container for Real-time alerts -->
+    <div id="toast-container" class="fixed top-6 right-6 z-50 flex flex-col gap-3 max-w-sm pointer-events-none"></div>
+
+    <!-- Header -->
+    <header class="glass sticky top-0 z-40 border-b border-cyan-500/20 px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <div class="h-10 w-10 rounded-lg bg-gradient-to-tr from-cyan-400 to-indigo-600 flex items-center justify-center shadow-lg shadow-cyan-500/20">
+                <span class="font-orbitron font-extrabold text-xl text-white">CN</span>
+            </div>
+            <div>
+                <h1 class="font-orbitron font-extrabold text-lg tracking-wider text-cyan-400">CYBER NEXUS</h1>
+                <p id="sub-title" class="text-xs text-indigo-300 font-medium">AI-Powered Decision Intelligence System for Law Enforcement</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-4">
+            <!-- Language translation toggle -->
+            <button onclick="toggleLanguage()" id="lang-btn" class="text-xs bg-cyan-950/60 hover:bg-cyan-900 border border-cyan-800 text-cyan-400 px-3 py-1.5 rounded-full font-bold transition-all">
+                ಕನ್ನಡ / ENG
+            </button>
+            <button onclick="exportReport()" class="text-xs bg-indigo-950/60 hover:bg-indigo-900 border border-indigo-800 text-indigo-400 px-3 py-1.5 rounded-full font-bold transition-all">
+                PDF Report
+            </button>
+            <span class="text-xs font-semibold bg-cyan-950/80 border border-cyan-800 text-cyan-400 px-3 py-1.5 rounded-full font-orbitron">SECURE CORE</span>
+        </div>
+    </header>
+
+    <main class="flex-1 p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 max-w-7xl mx-auto w-full">
+
+        <!-- Left Column: AI conversational interface (5 cols) -->
+        <section class="lg:col-span-5 flex flex-col gap-6 h-[85vh]">
+            
+            <!-- Assistant Panel -->
+            <div class="glass rounded-2xl flex-1 flex flex-col overflow-hidden glow-border">
+                <div class="px-5 py-3 border-b border-gray-800 bg-gray-900/50 flex justify-between items-center">
+                    <div class="flex items-center gap-2">
+                        <span class="p-1.5 rounded-md bg-cyan-900/50 border border-cyan-600/30 text-cyan-400 text-sm">💬</span>
+                        <h2 id="panel-title" class="font-orbitron font-bold text-sm tracking-wide">CYBERNEXUS ORCHESTRATOR</h2>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="toggleVoiceOutput()" id="voice-out-btn" class="text-xs text-gray-400 hover:text-cyan-400">🔊 Speak: ON</button>
+                        <span class="text-xs text-gray-500">|</span>
+                        <button onclick="clearChat()" class="text-xs text-gray-400 hover:text-cyan-400 transition-colors">Clear</button>
+                    </div>
+                </div>
+                
+                <!-- Chat Window -->
+                <div id="chat-messages" class="flex-1 p-4 overflow-y-auto space-y-4 text-sm scrollbar-thin">
+                    <div class="flex gap-3">
+                        <div class="h-8 w-8 rounded bg-cyan-900/50 border border-cyan-600/30 flex items-center justify-center text-xs">🤖</div>
+                        <div class="bg-gray-900/80 p-3 rounded-r-xl rounded-bl-xl border border-gray-800 max-w-[85%]">
+                            <p id="welcome-msg" class="leading-relaxed">System ready. Directing queries to specialist agents: Query Agent, Insights Agent, Predictive Agent. Ask a question or request a forecast below.</p>
+                            <div class="mt-3 flex flex-wrap gap-2">
+                                <button onclick="quickQuery('Forecast cyber crime cases in Bangalore')" class="text-xs bg-cyan-950/60 hover:bg-cyan-900 border border-cyan-800/40 text-cyan-400 rounded px-2.5 py-1">Forecast Bengaluru Cyber</button>
+                                <button onclick="quickQuery('Are there any accomplice links in narcotics?')" class="text-xs bg-cyan-950/60 hover:bg-cyan-900 border border-cyan-800/40 text-cyan-400 rounded px-2.5 py-1">Offender Network Links</button>
+                                <button onclick="quickQuery('Explain KSP SOP for Cyber Crime Financial Fraud')" class="text-xs bg-cyan-950/60 hover:bg-cyan-900 border border-cyan-800/40 text-cyan-400 rounded px-2.5 py-1">SOP Guidelines RAG</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Agent Dispatch Log -->
+                <div id="agent-dispatch-log" class="hidden px-4 py-2 border-t border-gray-800/60 bg-gray-950/50 text-xs font-mono max-h-24 overflow-y-auto">
+                    <div class="text-indigo-400">> Master Orchestrator initialized.</div>
+                </div>
+
+                <!-- Input Panel -->
+                <div class="p-3 border-t border-gray-800 bg-gray-900/40 flex gap-2">
+                    <input id="chat-input" type="text" placeholder="Query decision intelligence system..." class="flex-1 bg-gray-950/80 border border-gray-800 rounded-lg px-4 py-2 text-sm focus:outline-none focus:border-cyan-500 text-gray-200" onkeydown="if(event.key === 'Enter') sendQuery()">
+                    <!-- Mic Button -->
+                    <button onclick="toggleVoiceInput()" id="mic-btn" class="bg-gray-800 border border-gray-700 hover:border-cyan-500 text-gray-300 hover:text-cyan-400 p-2 rounded-lg transition-all" title="Voice Search">
+                        🎤
+                    </button>
+                    <button onclick="sendQuery()" class="glow-btn bg-cyan-500 hover:bg-cyan-400 text-gray-950 font-bold px-4 py-2 rounded-lg text-sm transition-all duration-300">
+                        Send
+                    </button>
+                </div>
+            </div>
+
+            <!-- Suspect similarity check dropzone -->
+            <div class="glass rounded-2xl p-5 glow-border flex flex-col gap-3 h-48">
+                <h3 class="font-orbitron font-bold text-xs tracking-wide text-cyan-400">👤 SUSPECT PROFILE MATCH (MULTIMODAL)</h3>
+                <div class="flex gap-4 items-center">
+                    <div onclick="document.getElementById('suspect-input').click()" class="h-20 w-20 border-2 border-dashed border-cyan-800 hover:border-cyan-500 rounded-xl flex flex-col items-center justify-center cursor-pointer text-center p-1 transition-all">
+                        <span class="text-xl">📷</span>
+                        <span class="text-[9px] text-gray-400">Match Photo</span>
+                        <input type="file" id="suspect-input" class="hidden" accept="image/*" onchange="uploadSuspect(this)">
+                    </div>
+                    <div id="suspect-result" class="flex-1 text-xs text-gray-400">
+                        Upload suspect mugshot photo to perform real-time similarity search across repeat offender records database.
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- Right Column: Visual analytics, map, simulation (7 cols) -->
+        <section class="lg:col-span-7 flex flex-col gap-6">
+
+            <!-- Real-time Metrics -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                <div class="glass p-4 rounded-xl text-center border-l-2 border-cyan-400">
+                    <span class="text-xs text-gray-400 uppercase tracking-wider block">Total Crimes</span>
+                    <span id="stat-total" class="font-orbitron font-black text-2xl text-cyan-400 mt-1 block">---</span>
+                </div>
+                <div class="glass p-4 rounded-xl text-center border-l-2 border-emerald-400">
+                    <span class="text-xs text-gray-400 uppercase tracking-wider block">Solved Rate</span>
+                    <span id="stat-solved" class="font-orbitron font-black text-2xl text-emerald-400 mt-1 block">---</span>
+                </div>
+                <div class="glass p-4 rounded-xl text-center border-l-2 border-amber-400">
+                    <span class="text-xs text-gray-400 uppercase tracking-wider block">Active Cases</span>
+                    <span id="stat-pending" class="font-orbitron font-black text-2xl text-amber-400 mt-1 block">---</span>
+                </div>
+                <div class="glass p-4 rounded-xl text-center border-l-2 border-indigo-400">
+                    <span class="text-xs text-gray-400 uppercase tracking-wider block">Surge Alerts</span>
+                    <span id="stat-surges" class="font-orbitron font-black text-2xl text-indigo-400 mt-1 block">---</span>
+                </div>
+            </div>
+
+            <!-- Hotspots Map -->
+            <div class="glass rounded-2xl overflow-hidden glow-border flex flex-col h-80">
+                <div class="px-5 py-3 border-b border-gray-800 bg-gray-900/50 flex justify-between items-center">
+                    <h3 class="font-orbitron font-bold text-sm tracking-wide text-cyan-400">📍 GEOSPATIAL HEATMAPS & COMPARISON</h3>
+                    <span class="text-xs text-gray-400">District risk-scoring & hotspot coordinates</span>
+                </div>
+                <div id="map" class="flex-1 w-full z-10 bg-gray-950"></div>
+            </div>
+
+            <!-- Tabs: Forecast, Network, Recommendations -->
+            <div class="glass rounded-2xl p-5 glow-border flex flex-col gap-4">
+                <div class="flex border-b border-gray-800 gap-2 overflow-x-auto">
+                    <button id="tab-forecast-btn" class="border-b-2 border-cyan-400 text-cyan-400 font-bold px-4 py-2 text-sm focus:outline-none shrink-0" onclick="switchTab('forecast')">Trend Predictions</button>
+                    <button id="tab-network-btn" class="text-gray-400 font-medium px-4 py-2 text-sm hover:text-cyan-400 focus:outline-none shrink-0" onclick="switchTab('network')">Association Links</button>
+                    <button id="tab-sim-btn" class="text-gray-400 font-medium px-4 py-2 text-sm hover:text-cyan-400 focus:outline-none shrink-0" onclick="switchTab('sim')">Scenario Simulation</button>
+                    <button id="tab-rec-btn" class="text-gray-400 font-medium px-4 py-2 text-sm hover:text-cyan-400 focus:outline-none shrink-0" onclick="switchTab('rec')">AI Recommendations</button>
+                </div>
+
+                <!-- Tab: Forecast -->
+                <div id="tab-forecast" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+                        <div class="md:col-span-8 h-48">
+                            <canvas id="forecastChart"></canvas>
+                        </div>
+                        <div class="md:col-span-4 flex flex-col justify-center gap-2 bg-gray-950/40 p-4 rounded-xl border border-gray-800">
+                            <span class="text-[10px] text-gray-400 block uppercase font-orbitron">AI Explainability Reasoning</span>
+                            <p id="forecast-explanation" class="text-xs text-indigo-300 italic leading-relaxed">Loading models...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: Network -->
+                <div id="tab-network" class="hidden space-y-4">
+                    <div class="h-48 bg-gray-950/60 rounded-xl relative border border-gray-800 flex items-center justify-center overflow-hidden">
+                        <canvas id="networkCanvas" class="w-full h-full"></canvas>
+                    </div>
+                </div>
+
+                <!-- Tab: Simulation -->
+                <div id="tab-sim" class="hidden space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+                        <div class="md:col-span-6 space-y-4 text-xs">
+                            <div>
+                                <label class="block text-gray-400 mb-1">HAVE CRIME VOLUME CHANGE: <span id="sim-pct-val" class="text-cyan-400 font-bold">0%</span></label>
+                                <input type="range" id="sim-crime-pct" min="-50" max="50" value="0" class="w-full bg-gray-800 accent-cyan-400 rounded-lg cursor-pointer" oninput="updateSimulation()">
+                            </div>
+                            <div>
+                                <label class="block text-gray-400 mb-1">POLICE RESOURCE CAPACITY CHANGE: <span id="sim-res-val" class="text-indigo-400 font-bold">0%</span></label>
+                                <input type="range" id="sim-resource-pct" min="-50" max="50" value="0" class="w-full bg-gray-800 accent-indigo-400 rounded-lg cursor-pointer" oninput="updateSimulation()">
+                            </div>
+                        </div>
+                        <div class="md:col-span-6 bg-gray-950/50 p-4 rounded-xl border border-gray-800 text-xs">
+                            <span class="text-[10px] text-cyan-400 font-orbitron block mb-1">SIMULATION MODEL OUTCOME</span>
+                            <p id="sim-explanation" class="text-gray-400 leading-relaxed">Adjust sliders to simulate shifts in baseline crime rates or patrolling resources.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab: Recommendations -->
+                <div id="tab-rec" class="hidden space-y-3 max-h-48 overflow-y-auto scrollbar-thin">
+                    <div id="recs-list" class="space-y-2 text-xs">
+                        <div class="text-gray-500 italic">Submit queries to receive specific recommendation strategies.</div>
+                    </div>
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer class="glass border-t border-gray-800 text-center py-4 px-6 text-xs text-gray-500">
+        Team CyberNexus &copy; 2026. Karnataka Police Datathon Challenge 01.
+    </footer>
+
+    <script>
+        let map;
+        let forecastChart = null;
+        let networkData = null;
+        let voiceOutputActive = true;
+        let languageKannada = false;
+
+        // UI translation dictionary
+        const TRANSLATIONS = {
+            ENG: {
+                title: "AI-Powered Decision Intelligence System for Law Enforcement",
+                panel_title: "CYBERNEXUS ORCHESTRATOR",
+                welcome: "System ready. Directing queries to specialist agents: Query Agent, Insights Agent, Predictive Agent. Ask a question or request a forecast below.",
+                query_placeholder: "Query decision intelligence system..."
+            },
+            KAN: {
+                title: "ಕಾನೂನು ಜಾರಿಗಾಗಿ ಎಐ-ಚಾಲಿತ ನಿರ್ಧಾರ ಬುದ್ಧಿಮತ್ತೆ ವ್ಯವಸ್ಥೆ",
+                panel_title: "ಸೈಬರ್ನೆಕ್ಸಸ್ ಆರ್ಕೆಸ್ಟ್ರೇಟರ್",
+                welcome: "ವ್ಯವಸ್ಥೆ ಸಿದ್ಧವಾಗಿದೆ. ಪ್ರಶ್ನೆಗಳನ್ನು ತಜ್ಞ ಏಜೆಂಟ್‌ಗಳಿಗೆ ನಿರ್ದೇಶಿಸಲಾಗುತ್ತಿದೆ: ಕ್ವೆರಿ ಏಜೆಂಟ್, ಒಳನೋಟಗಳ ಏಜೆಂಟ್, ಪ್ರಿಡಿಕ್ಟಿವ್ ಏಜೆಂಟ್. ಕೆಳಗೆ ಪ್ರಶ್ನೆಯನ್ನು ಕೇಳಿ.",
+                query_placeholder: "ನಿರ್ಧಾರ ಬುದ್ಧಿಮತ್ತೆ ವ್ಯವಸ್ಥೆಯನ್ನು ವಿಚಾರಿಸಿ..."
+            }
+        };
+
+        // Trigger toast alerts
+        function showToast(title, msg, type = 'warning') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `glass p-4 rounded-xl border-l-4 ${type === 'danger' ? 'border-red-500' : 'border-amber-500'} shadow-lg pointer-events-auto flex flex-col gap-1 transition-all duration-300`;
+            toast.innerHTML = `
+                <div class="flex justify-between items-center text-xs font-bold ${type === 'danger' ? 'text-red-400' : 'text-amber-400'} uppercase font-orbitron">
+                    <span>⚠️ ${title}</span>
+                    <button onclick="this.parentElement.parentElement.remove()" class="text-gray-400 hover:text-white">✕</button>
+                </div>
+                <p class="text-xs text-gray-200">${msg}</p>
+            `;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 7000);
+        }
+
+        // Toggle UI Language
+        function toggleLanguage() {
+            languageKannada = !languageKannada;
+            const lang = languageKannada ? 'KAN' : 'ENG';
+            document.getElementById('sub-title').innerText = TRANSLATIONS[lang].title;
+            document.getElementById('panel-title').innerText = TRANSLATIONS[lang].panel_title;
+            document.getElementById('welcome-msg').innerText = TRANSLATIONS[lang].welcome;
+            document.getElementById('chat-input').placeholder = TRANSLATIONS[lang].query_placeholder;
+            
+            // Text to speech alert
+            speakText(languageKannada ? "ಕನ್ನಡ ಭಾಷೆ ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ" : "English language activated");
+        }
+
+        // Speech recognition
+        function toggleVoiceInput() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) {
+                alert("Speech recognition is not supported in this browser.");
+                return;
+            }
+            const recognition = new SpeechRecognition();
+            recognition.lang = languageKannada ? 'kn-IN' : 'en-US';
+            
+            const micBtn = document.getElementById('mic-btn');
+            micBtn.innerText = '🛑';
+            micBtn.classList.add('bg-red-950/60');
+            
+            recognition.onresult = function(event) {
+                const speechToText = event.results[0][0].transcript;
+                document.getElementById('chat-input').value = speechToText;
+            };
+            
+            recognition.onerror = function() {
+                micBtn.innerText = '🎤';
+                micBtn.classList.remove('bg-red-950/60');
+            };
+            
+            recognition.onend = function() {
+                micBtn.innerText = '🎤';
+                micBtn.classList.remove('bg-red-950/60');
+            };
+            
+            recognition.start();
+        }
+
+        // Text to Speech
+        function toggleVoiceOutput() {
+            voiceOutputActive = !voiceOutputActive;
+            document.getElementById('voice-out-btn').innerText = voiceOutputActive ? '🔊 Speak: ON' : '🔇 Speak: OFF';
+        }
+
+        function speakText(text) {
+            if (!voiceOutputActive) return;
+            const cleanText = text.replace(/\*/g, '').replace(/#/g, '');
+            const synth = window.speechSynthesis;
+            const utterance = new SpeechSynthesisUtterance(cleanText);
+            utterance.lang = languageKannada ? 'kn-IN' : 'en-US';
+            synth.speak(utterance);
+        }
+
+        // Suspect Mugshot Match upload simulation
+        async function uploadSuspect(input) {
+            if (input.files.length === 0) return;
+            const file = input.files[0];
+            const formData = new FormData();
+            formData.append("file", file);
+
+            const resultContainer = document.getElementById('suspect-result');
+            resultContainer.innerHTML = '<span class="text-cyan-400 font-medium">Scanning criminal database...</span>';
+
+            try {
+                const res = await fetch("/api/upload_suspect", {
+                    method: "POST",
+                    body: formData
+                });
+                const data = await res.json();
+                if (data.match_found) {
+                    resultContainer.innerHTML = `
+                        <div class="p-2 bg-cyan-950/40 rounded border border-cyan-900/30 text-xs">
+                            <div class="flex justify-between font-bold text-cyan-400">
+                                <span>MATCH DETECTED: ${data.suspect.name}</span>
+                                <span>${data.confidence_score}% Match</span>
+                            </div>
+                            <p class="text-[10px] text-gray-400 mt-1">ID: ${data.suspect.id} | Crime: ${data.suspect.crime} | Registry: ${data.suspect.status}</p>
+                        </div>
+                    `;
+                } else {
+                    resultContainer.innerText = "No profile matched in the database.";
+                }
+            } catch(e) {
+                resultContainer.innerText = "Scanning registry failed.";
+            }
+        }
+
+        // Print analytical report
+        function exportReport() {
+            window.open("/api/report", "_blank");
+        }
+
+        // Simulation update handler
+        async function updateSimulation() {
+            const crimePct = parseFloat(document.getElementById('sim-crime-pct').value);
+            const resPct = parseFloat(document.getElementById('sim-resource-pct').value);
+
+            document.getElementById('sim-pct-val').innerText = (crimePct > 0 ? '+' : '') + crimePct + '%';
+            document.getElementById('sim-res-val').innerText = (resPct > 0 ? '+' : '') + resPct + '%';
+
+            try {
+                const res = await fetch("/api/simulate", {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        district: 'Bengaluru',
+                        crime_type: 'Cyber Crime',
+                        crime_rate_pct_change: crimePct,
+                        resource_change_pct: resPct
+                    })
+                });
+                const data = await res.json();
+                
+                document.getElementById('sim-explanation').innerText = data.explanation;
+                
+                // Redraw predictions chart with simulation
+                if (forecastChart) {
+                    const simForecast = data.forecast;
+                    const history = data.history;
+                    
+                    // Construct simulated dataset matching lengths
+                    const simDataset = [...Array(history.length).fill(null), ...simForecast.map(f => f.count)];
+                    if (history.length > 0 && simForecast.length > 0) {
+                        simDataset[history.length - 1] = history[history.length - 1].count;
+                    }
+                    
+                    // Add or replace simulation dataset
+                    if (forecastChart.data.datasets.length > 2) {
+                        forecastChart.data.datasets[2].data = simDataset;
+                    } else {
+                        forecastChart.data.addDataset({
+                            label: 'Simulated Trend Scenario',
+                            data: simDataset,
+                            borderColor: '#818cf8',
+                            borderDash: [4, 4],
+                            backgroundColor: 'transparent',
+                            tension: 0.2,
+                            borderWidth: 2
+                        });
+                    }
+                    forecastChart.update();
+                }
+            } catch(e) {
+                console.error("Simulation error:", e);
+            }
+        }
+
+        // Init leaflet map
+        function initMap() {
+            map = L.map('map').setView([13.8, 76.2], 7);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; CARTO'
+            }).addTo(map);
+        }
+
+        // Load analytical dashboard stats
+        async function fetchDashboardData() {
+            try {
+                const res = await fetch('/api/insights');
+                const data = await res.json();
+                
+                document.getElementById('stat-total').innerText = data.stats.total_crimes;
+                document.getElementById('stat-solved').innerText = data.stats.solved_percentage + '%';
+                document.getElementById('stat-pending').innerText = data.stats.pending_count;
+                document.getElementById('stat-surges').innerText = data.anomalies.length;
+
+                // Loop anomalies and throw toast alerts
+                data.anomalies.forEach(anom => {
+                    showToast(`High Crime Surge Alert`, `${anom.crime_type} incidents surged suddenly in ${anom.district}! (Current count: ${anom.current_count}, expected mean: ${anom.historical_mean})`, 'danger');
+                });
+
+                // Load Network Links
+                const networkRes = await fetch('/api/network');
+                networkData = await networkRes.json();
+                
+                drawNetworkGraph();
+            } catch(e) {
+                console.error("Dashboard analytics load failed:", e);
+            }
+        }
+
+        // Plot map points
+        async function fetchHotspots() {
+            try {
+                const res = await fetch('/api/hotspots');
+                const data = await res.json();
+                
+                data.hotspots.forEach(pt => {
+                    const marker = L.circleMarker([pt.lat, pt.lng], {
+                        radius: 6,
+                        fillColor: pt.type === 'Cyber Crime' ? '#22d3ee' : pt.type === 'Narcotics' ? '#f59e0b' : '#ef4444',
+                        color: '#fff',
+                        weight: 1,
+                        opacity: 0.8,
+                        fillOpacity: 0.7
+                    }).addTo(map);
+                    
+                    marker.bindPopup(`
+                        <div class="text-gray-900 font-sans text-xs">
+                            <b class="text-sm font-bold block">${pt.id} (${pt.type})</b>
+                            <span class="block">Station: ${pt.station}</span>
+                            <span class="block">Date: ${pt.date}</span>
+                            <span class="block font-semibold">Status: ${pt.status}</span>
+                        </div>
+                    `);
+                });
+            } catch(e) {
+                console.error("Map hotspots error:", e);
+            }
+        }
+
+        // Fetch standard prediction forecast
+        async function fetchForecast() {
+            try {
+                const res = await fetch('/api/predict', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({periods: 6})
+                });
+                const data = await res.json();
+                
+                document.getElementById('forecast-explanation').innerText = data.forecast.explanation;
+                
+                const history = data.forecast.history;
+                const forecast = data.forecast.forecast;
+                
+                const labels = [...history.map(h => h.month), ...forecast.map(f => f.month)];
+                const historyCounts = [...history.map(h => h.count), ...Array(forecast.length).fill(null)];
+                const forecastCounts = [...Array(history.length).fill(null), ...forecast.map(f => f.count)];
+                
+                if (history.length > 0 && forecast.length > 0) {
+                    forecastCounts[history.length - 1] = history[history.length - 1].count;
+                }
+
+                if (forecastChart) {
+                    forecastChart.destroy();
+                }
+
+                const ctx = document.getElementById('forecastChart').getContext('2d');
+                forecastChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Historical Incident Count',
+                                data: historyCounts,
+                                borderColor: '#06b6d4',
+                                backgroundColor: 'rgba(6, 182, 212, 0.1)',
+                                tension: 0.2,
+                                borderWidth: 2,
+                                fill: true
+                            },
+                            {
+                                label: 'Baseline AI Forecast',
+                                data: forecastCounts,
+                                borderColor: '#f59e0b',
+                                borderDash: [6, 4],
+                                backgroundColor: 'transparent',
+                                tension: 0.2,
+                                borderWidth: 2
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { labels: { color: '#9ca3af', font: { size: 9 } } }
+                        },
+                        scales: {
+                            x: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#9ca3af', font: { size: 9 } } },
+                            y: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#9ca3af', font: { size: 9 } } }
+                        }
+                    }
+                });
+            } catch(e) {
+                console.error("Forecast load error:", e);
+            }
+        }
+
+        // Draw NetworkX co-offending graph
+        function drawNetworkGraph() {
+            if (!networkData) return;
+            const canvas = document.getElementById('networkCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+
+            const width = canvas.width;
+            const height = canvas.height;
+
+            const nodes = networkData.nodes;
+            const links = networkData.links;
+            const positions = {};
+
+            nodes.forEach((node, idx) => {
+                const angle = (idx / nodes.length) * 2 * Math.PI;
+                positions[node.id] = {
+                    x: width / 2 + (Math.min(width, height) / 2.6) * Math.cos(angle),
+                    y: height / 2 + (Math.min(width, height) / 2.6) * Math.sin(angle)
+                };
+            });
+
+            ctx.clearRect(0, 0, width, height);
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+            ctx.lineWidth = 1;
+            links.forEach(link => {
+                const start = positions[link.source];
+                const end = positions[link.target];
+                if (start && end) {
+                    ctx.beginPath();
+                    ctx.moveTo(start.x, start.y);
+                    ctx.lineTo(end.x, end.y);
+                    ctx.stroke();
+                }
+            });
+
+            nodes.forEach(node => {
+                const pos = positions[node.id];
+                if (pos) {
+                    ctx.beginPath();
+                    ctx.arc(pos.x, pos.y, 8, 0, 2 * Math.PI);
+                    ctx.fillStyle = node.primary_crime_type === 'Cyber Crime' ? '#22d3ee' : '#f59e0b';
+                    ctx.fill();
+                    ctx.strokeStyle = '#fff';
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                    
+                    ctx.fillStyle = '#9ca3af';
+                    ctx.font = '8px Orbitron';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(node.name.split(' ')[0], pos.x, pos.y - 12);
+                }
+            });
+        }
+
+        // Tab switches
+        function switchTab(tab) {
+            const tabs = ['forecast', 'network', 'sim', 'rec'];
+            tabs.forEach(t => {
+                document.getElementById(`tab-${t}`).classList.add('hidden');
+                document.getElementById(`tab-${t}-btn`).className = "text-gray-400 font-medium px-4 py-2 text-sm hover:text-cyan-400 focus:outline-none shrink-0";
+            });
+
+            document.getElementById(`tab-${tab}`).classList.remove('hidden');
+            document.getElementById(`tab-${tab}-btn`).className = "border-b-2 border-cyan-400 text-cyan-400 font-bold px-4 py-2 text-sm focus:outline-none shrink-0";
+            
+            if (tab === 'network') {
+                setTimeout(drawNetworkGraph, 50);
+            }
+        }
+
+        // Orchestrator Query dispatcher
+        async function sendQuery() {
+            const inputEl = document.getElementById('chat-input');
+            const query = inputEl.value.trim();
+            if (!query) return;
+            
+            inputEl.value = '';
+            appendMessage(query, 'user');
+
+            try {
+                const response = await fetch('/api/orchestrate', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({message: query, session_id: 'cyber-nexus-orchestration'})
+                });
+                const data = await response.json();
+                
+                // Append AI reply bubble
+                appendMessage(data.chatbot_response, 'ai');
+                speakText(data.chatbot_response);
+
+                // Show Multi-Agent routing logs
+                const logsEl = document.getElementById('agent-dispatch-log');
+                logsEl.classList.remove('hidden');
+                logsEl.innerHTML = '';
+                logsEl.innerHTML += `<div class="text-cyan-400">> Query handled by: ${data.primary_agent}</div>`;
+                data.agent_logs.forEach(log => {
+                    logsEl.innerHTML += `<div class="text-gray-400">> ${log}</div>`;
+                });
+
+                // Update recommendations tab if recommendations present
+                if (data.recommendations && data.recommendations.length > 0) {
+                    const recsContainer = document.getElementById('recs-list');
+                    recsContainer.innerHTML = '';
+                    data.recommendations.forEach(rec => {
+                        const div = document.createElement('div');
+                        div.className = 'p-3 bg-cyan-950/20 border border-cyan-900/30 rounded-xl';
+                        div.innerHTML = `
+                            <div class="flex justify-between font-bold text-cyan-400 mb-1">
+                                <span>${rec.title}</span>
+                                <span class="bg-cyan-950 border border-cyan-800 text-cyan-300 px-1.5 py-0.5 rounded text-[9px]">${rec.priority} Priority</span>
+                            </div>
+                            <p class="text-gray-300">${rec.desc}</p>
+                        `;
+                        recsContainer.appendChild(div);
+                    });
+                    switchTab('rec'); // Switch focus to recommendations
+                }
+
+                // If visual forecast is returned by prediction agent, update chart
+                if (data.visualizations.forecast) {
+                    const forecastData = data.visualizations.forecast;
+                    document.getElementById('forecast-explanation').innerText = forecastData.explanation;
+                    
+                    const history = forecastData.history;
+                    const forecast = forecastData.forecast;
+                    
+                    const labels = [...history.map(h => h.month), ...forecast.map(f => f.month)];
+                    const historyCounts = [...history.map(h => h.count), ...Array(forecast.length).fill(null)];
+                    const forecastCounts = [...Array(history.length).fill(null), ...forecast.map(f => f.count)];
+                    if (history.length > 0 && forecast.length > 0) {
+                        forecastCounts[history.length - 1] = history[history.length - 1].count;
+                    }
+                    
+                    if (forecastChart) {
+                        forecastChart.data.labels = labels;
+                        forecastChart.data.datasets[0].data = historyCounts;
+                        forecastChart.data.datasets[1].data = forecastCounts;
+                        forecastChart.update();
+                    }
+                    switchTab('forecast');
+                }
+            } catch(e) {
+                appendMessage("Failed to orchestrate intelligence response. Backend offline.", 'ai');
+            }
+        }
+
+        function appendMessage(text, sender) {
+            const messagesContainer = document.getElementById('chat-messages');
+            const div = document.createElement('div');
+            div.className = 'flex gap-3 ' + (sender === 'user' ? 'justify-end' : '');
+            
+            const bubbleBg = sender === 'user' ? 'bg-cyan-900/60 border-cyan-800' : 'bg-gray-900/80 border-gray-800';
+            const textClass = sender === 'user' ? 'text-cyan-100' : 'text-gray-200';
+            const borderStyle = 'border';
+
+            div.innerHTML = `
+                ${sender !== 'user' ? `<div class="h-8 w-8 rounded bg-cyan-900/50 border border-cyan-600/30 flex items-center justify-center text-xs">🤖</div>` : ''}
+                <div class="${bubbleBg} ${borderStyle} p-3 rounded-xl max-w-[80%] ${textClass} shadow-md">
+                    <p class="leading-relaxed whitespace-pre-wrap">${text}</p>
+                </div>
+                ${sender === 'user' ? `<div class="h-8 w-8 rounded bg-indigo-900/50 border border-indigo-600/30 flex items-center justify-center text-xs">👤</div>` : ''}
+            `;
+            messagesContainer.appendChild(div);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        function quickQuery(query) {
+            document.getElementById('chat-input').value = query;
+            sendQuery();
+        }
+
+        function clearChat() {
+            const messagesContainer = document.getElementById('chat-messages');
+            messagesContainer.innerHTML = '';
+            appendMessage(languageKannada ? "ಸಂವಾದ ವಿವರಗಳನ್ನು ತೆರವುಗೊಳಿಸಲಾಗಿದೆ. ಸಹಾಯ ಮಾಡಲು ನಾನು ಸಿದ್ಧನಿದ್ದೇನೆ." : "Chat session cleared. How can I help you analyze the KSP crime records today?", 'ai');
+            document.getElementById('agent-dispatch-log').classList.add('hidden');
+        }
+
+        window.addEventListener('resize', drawNetworkGraph);
+
+        window.onload = async () => {
+            initMap();
+            await fetchDashboardData();
+            await fetchHotspots();
+            await fetchForecast();
+        };
+    </script>
+</body>
+</html>
