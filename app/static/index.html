@@ -471,6 +471,17 @@
                     showToast(`High Crime Surge Alert`, `${anom.crime_type} incidents surged suddenly in ${anom.district}! (Current count: ${anom.current_count}, expected mean: ${anom.historical_mean})`, 'danger');
                 });
 
+                // Fetch Isolation Forest anomalies from ML Engine
+                try {
+                    const mlAnomRes = await fetch('/api/ml/anomalies');
+                    const mlAnomData = await mlAnomRes.json();
+                    mlAnomData.anomalies.forEach(anom => {
+                        showToast(`Isolation Forest Outlier Spike`, `${anom.msg} Date: ${anom.date}`, 'warning');
+                    });
+                } catch(err) {
+                    console.error("Isolation forest outliers load failed:", err);
+                }
+
                 // Load Network Links
                 const networkRes = await fetch('/api/network');
                 networkData = await networkRes.json();
@@ -481,7 +492,7 @@
             }
         }
 
-        // Plot map points
+        // Plot map points and K-Means ML clusters
         async function fetchHotspots() {
             try {
                 const res = await fetch('/api/hotspots');
@@ -506,8 +517,29 @@
                         </div>
                     `);
                 });
+
+                // Fetch K-Means Cluster Centers from ML engine
+                const clusterRes = await fetch('/api/ml/clusters');
+                const clusterData = await clusterRes.json();
+                clusterData.centroids.forEach((c, idx) => {
+                    const clusterMarker = L.circleMarker([c.lat, c.lng], {
+                        radius: 12,
+                        fillColor: '#818cf8',
+                        color: '#fff',
+                        weight: 2,
+                        opacity: 0.9,
+                        fillOpacity: 0.8
+                    }).addTo(map);
+                    clusterMarker.bindPopup(`
+                        <div class="text-gray-900 font-sans text-xs">
+                            <b class="text-sm font-bold block text-indigo-600">ML HOTSPOT CENTROID #${idx+1}</b>
+                            <span class="block">Lat: ${c.lat.toFixed(4)} | Lng: ${c.lng.toFixed(4)}</span>
+                            <span class="block font-semibold text-red-500">Classification: High-Volume Cluster Center</span>
+                        </div>
+                    `);
+                });
             } catch(e) {
-                console.error("Map hotspots error:", e);
+                console.error("Map hotspots and clusters error:", e);
             }
         }
 

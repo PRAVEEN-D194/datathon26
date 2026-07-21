@@ -13,6 +13,8 @@ from app.modules.insights import generate_analytical_insights
 from app.modules.orchestrator import orchestrate_intelligence_request
 from app.modules.reports import generate_html_report
 from app.db.database import get_db, CrimeIncident, Offender
+from app.modules.ml_models import train_and_save_ml_models, predict_offender_risk, get_kmeans_centroids, detect_isolation_anomalies
+
 
 app = FastAPI(
     title="CyberNexus | KSP Decision Intelligence Platform",
@@ -172,6 +174,53 @@ def upload_suspect_endpoint(file: UploadFile = File(...)):
                 "status": "Repeat Offender Registry List"
             }
         }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# 10. ML Model Training trigger
+@app.post("/api/ml/train")
+def train_ml_models_endpoint():
+    try:
+        logs = train_and_save_ml_models()
+        return {"status": "Success", "logs": logs}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# 11. K-Means Hotspots centroids
+@app.get("/api/ml/clusters")
+def get_ml_clusters_endpoint():
+    try:
+        centroids = get_kmeans_centroids()
+        return {"centroids": centroids}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# 12. Offender Risk Scoring
+class RiskScoreRequest(BaseModel):
+    age: int
+    crime_type: str
+    frequency: int
+    centrality: float
+
+@app.post("/api/ml/risk_score")
+def predict_risk_score_endpoint(payload: RiskScoreRequest):
+    try:
+        prediction = predict_offender_risk(
+            payload.age, 
+            payload.crime_type, 
+            payload.frequency, 
+            payload.centrality
+        )
+        return prediction
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# 13. Isolation Forest Anomalies
+@app.get("/api/ml/anomalies")
+def get_ml_anomalies_endpoint():
+    try:
+        anomalies = detect_isolation_anomalies()
+        return {"anomalies": anomalies}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
