@@ -6,9 +6,9 @@
     <title>CyberNexus | KSP Decision Intelligence Platform</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -797,11 +797,14 @@
 
         window.addEventListener('resize', drawNetworkGraph);
 
-        window.onload = async () => {
-            initMap();
-            await fetchDashboardData();
-            await fetchHotspots();
-            await fetchForecast();
+        window.onload = () => {
+            // Defer execution of heavy rendering scripts to unblock main thread and LCP
+            setTimeout(async () => {
+                initMap();
+                await fetchDashboardData();
+                await fetchHotspots();
+                await fetchForecast();
+            }, 100);
         };
     </script>
 </body>
