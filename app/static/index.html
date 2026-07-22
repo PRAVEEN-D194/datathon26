@@ -170,19 +170,19 @@
             <!-- Real-time Metrics -->
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
                 <div class="glass p-4 rounded-xl text-center border-l-2 border-cyan-400">
-                    <span class="text-xs text-gray-400 uppercase tracking-wider block">Total Crimes</span>
+                    <span class="text-xs text-slate-200 uppercase tracking-wider block">Total Crimes</span>
                     <span id="stat-total" class="font-orbitron font-black text-2xl text-cyan-400 mt-1 block">---</span>
                 </div>
                 <div class="glass p-4 rounded-xl text-center border-l-2 border-emerald-400">
-                    <span class="text-xs text-gray-400 uppercase tracking-wider block">Solved Rate</span>
+                    <span class="text-xs text-slate-200 uppercase tracking-wider block">Solved Rate</span>
                     <span id="stat-solved" class="font-orbitron font-black text-2xl text-emerald-400 mt-1 block">---</span>
                 </div>
                 <div class="glass p-4 rounded-xl text-center border-l-2 border-amber-400">
-                    <span class="text-xs text-gray-400 uppercase tracking-wider block">Active Cases</span>
+                    <span class="text-xs text-slate-200 uppercase tracking-wider block">Active Cases</span>
                     <span id="stat-pending" class="font-orbitron font-black text-2xl text-amber-400 mt-1 block">---</span>
                 </div>
                 <div class="glass p-4 rounded-xl text-center border-l-2 border-indigo-400">
-                    <span class="text-xs text-gray-400 uppercase tracking-wider block">Surge Alerts</span>
+                    <span class="text-xs text-slate-200 uppercase tracking-wider block">Surge Alerts</span>
                     <span id="stat-surges" class="font-orbitron font-black text-2xl text-indigo-400 mt-1 block">---</span>
                 </div>
             </div>
@@ -191,9 +191,9 @@
             <div class="glass rounded-2xl overflow-hidden glow-border flex flex-col h-80">
                 <div class="px-5 py-3 border-b border-gray-800 bg-gray-900/50 flex justify-between items-center">
                     <h3 class="font-orbitron font-bold text-sm tracking-wide text-cyan-400">📍 GEOSPATIAL HEATMAPS & COMPARISON</h3>
-                    <span class="text-xs text-gray-400">District risk-scoring & hotspot coordinates</span>
+                    <span class="text-xs text-slate-200">District risk-scoring & hotspot coordinates</span>
                 </div>
-                <div id="map" class="flex-1 w-full z-10 bg-gray-950"></div>
+                <div id="map" class="w-full bg-gray-950" style="height: 270px; min-height: 270px; z-index: 20;"></div>
             </div>
 
             <!-- Tabs: Forecast, Network, Recommendations -->
@@ -455,8 +455,13 @@
             }
         }
 
-        // Init leaflet map
+        // Init leaflet map with safety checks
         function initMap() {
+            if (typeof L === 'undefined') {
+                setTimeout(initMap, 50);
+                return;
+            }
+            if (map) return;
             map = L.map('map').setView([13.8, 76.2], 7);
             L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
                 attribution: '&copy; CARTO'
@@ -553,6 +558,10 @@
 
         // Fetch standard prediction forecast
         async function fetchForecast() {
+            if (typeof Chart === 'undefined') {
+                setTimeout(fetchForecast, 50);
+                return;
+            }
             try {
                 const res = await fetch('/api/predict', {
                     method: 'POST',
