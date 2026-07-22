@@ -34,11 +34,20 @@
     <style>
         body {
             font-family: 'Outfit', sans-serif;
+            background-color: #f8fafc;
+            color: #0f172a;
+            background-image: 
+                radial-gradient(at 10% 20%, rgba(6, 182, 212, 0.05) 0px, transparent 50%),
+                radial-gradient(at 90% 80%, rgba(99, 102, 241, 0.05) 0px, transparent 50%);
+            background-attachment: fixed;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        html.dark body {
             background-color: #050811;
+            color: #f1f5f9;
             background-image: 
                 radial-gradient(at 10% 20%, rgba(6, 182, 212, 0.12) 0px, transparent 50%),
                 radial-gradient(at 90% 80%, rgba(99, 102, 241, 0.12) 0px, transparent 50%);
-            background-attachment: fixed;
         }
         .glow-border {
             box-shadow: 0 0 15px rgba(34, 211, 238, 0.12);
@@ -48,10 +57,17 @@
             box-shadow: 0 0 20px rgba(34, 211, 238, 0.4);
         }
         .glass {
-            background: rgba(8, 12, 24, 0.75);
+            background: rgba(255, 255, 255, 0.85);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            color: #1e293b;
+            transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+        }
+        html.dark .glass {
+            background: rgba(8, 12, 24, 0.75);
             border: 1px solid rgba(255, 255, 255, 0.05);
+            color: #f1f5f9;
         }
         /* Custom scrollbar */
         ::-webkit-scrollbar { width: 5px; }
@@ -84,8 +100,12 @@
             </div>
         </div>
         <div class="flex items-center gap-4">
+            <!-- Theme toggle button -->
+            <button onclick="toggleTheme()" id="theme-btn" class="text-xs bg-slate-200 dark:bg-cyan-950/60 hover:bg-slate-300 dark:hover:bg-cyan-900 border border-slate-300 dark:border-cyan-800 text-slate-800 dark:text-cyan-400 px-3 py-1.5 rounded-full font-bold transition-all">
+                ☀️ Mode
+            </button>
             <!-- Language translation toggle -->
-            <button onclick="toggleLanguage()" id="lang-btn" class="text-xs bg-cyan-950/60 hover:bg-cyan-900 border border-cyan-800 text-cyan-400 px-3 py-1.5 rounded-full font-bold transition-all">
+            <button onclick="toggleLanguage()" id="lang-btn" class="text-xs bg-slate-200 dark:bg-cyan-950/60 hover:bg-slate-300 dark:hover:bg-cyan-900 border border-slate-300 dark:border-cyan-800 text-slate-800 dark:text-cyan-400 px-3 py-1.5 rounded-full font-bold transition-all">
                 ಕನ್ನಡ / ENG
             </button>
             <button onclick="exportReport()" class="text-xs bg-indigo-950/60 hover:bg-indigo-900 border border-indigo-800 text-indigo-400 px-3 py-1.5 rounded-full font-bold transition-all">
@@ -830,6 +850,17 @@
         }
 
         window.addEventListener('resize', drawNetworkGraph);
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            html.classList.toggle('dark');
+            const themeBtn = document.getElementById('theme-btn');
+            if (html.classList.contains('dark')) {
+                themeBtn.innerText = '☀️ Mode';
+            } else {
+                themeBtn.innerText = '🌙 Mode';
+            }
+        }
 
         window.onload = () => {
             // Defer execution of heavy rendering scripts to unblock main thread and LCP
